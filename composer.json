@@ -1,0 +1,14 @@
+{
+    "name": "root/email-finder",
+    "authors": [
+        {
+            "name": "Simone Pelagatti",
+            "email": "simone.pelagatti01@gmail.com"
+        }
+    ],
+    "require": {
+    	"hbattat/verifyemail": "*",
+        "sunra/php-simple-html-dom-parser": "*",
+        "jonnyw/php-phantomjs": "4.*"
+    }
+}
