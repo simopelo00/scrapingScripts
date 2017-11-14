@@ -1,5 +1,5 @@
 <?php
-// php getRestaurants.php rimini 187807
+// php tripadvisorScraper.php rimini 187807
 // l'id bisogna cercarlo online andando su tripadvisor e copiando il codice accanto a g
 require("simple_html_dom.php");
 if (ob_get_level() == 0) ob_start();
@@ -12,7 +12,7 @@ $urlEnd = "&availSearchEnabled=true&eaterydate=2017_10_13&date=2017-10-14&time=2
 
 $domParser = new \simple_html_dom(file_get_contents($urlStart."00".$urlEnd));
 $records = (trim($domParser->find(".pageNum",-1)->plaintext)-1)*30;
-
+var_dump($records);
 for($iii=0;$iii<=$records;$iii+=30){
 	$result = file_get_contents($urlStart.$iii.$urlEnd);
 	$domParser = new \simple_html_dom($result);
