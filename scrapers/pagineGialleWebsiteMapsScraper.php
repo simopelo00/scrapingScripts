@@ -1,5 +1,5 @@
 <?php
-// php pgScraper.php gioielleria lombardia
+// php pagineGialleWebsiteMapsScraper.php gioielleria lombardia
 require_once("simple_html_dom.php");
 
 $url = "https://www.paginegialle.it/ricerca/".str_replace(" ", "%20", $argv[1])."/".str_replace(" ", "%20", $argv[2]);
@@ -46,10 +46,37 @@ for($iii=1;$iii<$pagesNumber;$iii++){
 		}
 		sleep(1.5);
 		$result["website"] = $resultWebsite;
-		if($result["website"] != ""){
-			fputcsv($output, $result);
+		if($result["website"] == ""){
+			$result = getWebsiteFromMaps($result["name"], $argv[2]);
+			if($result["website"] != ""){
+				fputcsv($output, $result);
+			}
 		}
 		print_r($result);
 	}
 }
 fclose($output);
+
+function getWebsiteFromMaps($activityName, $place){
+	$placeInfo = json_decode(file_get_contents(mapsQuery($activityName, $place)));
+	$place_id = $placeInfo->results[0]->place_id;
+	$place = idRequest($place_id);
+	return $place;
+}
+
+function mapsQuery($placeName, $placeCity){
+	$mapsQueryStart = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=";
+	$mapsQueryEnd = "+".str_replace(" ", "+", $placeCity)."&key=AIzaSyCV_RUCS0N93h0M8HUu4pYE8PSBLxGkiZ8";
+	return $mapsQueryStart.str_replace(" ","+",$placeName).$mapsQueryEnd;
+}
+
+function idRequest($placeId){
+	sleep(0.8);
+	$place = [];
+	$response = json_decode(file_get_contents("https://maps.googleapis.com/maps/api/place/details/json?placeid=".$placeId."&key=AIzaSyCV_RUCS0N93h0M8HUu4pYE8PSBLxGkiZ8"));
+	$place["name"] = $response->result->name;
+	$place["website"] = $response->result->website??"";
+	$place["address"] = $response->result->formatted_address;
+	$place["phone"] = $response->result->formatted_phone_number;
+	return $place;
+}
